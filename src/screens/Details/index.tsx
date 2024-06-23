@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../services/api";
 import { styles } from "./styles";
 import {
@@ -66,7 +66,9 @@ const Details = () => {
           <BookmarkSimple color="#fff" size={32} weight="thin" />
         </TouchableOpacity>
       </View>
-      <View>
+
+      {loading === true ? <ActivityIndicator size="large" color="#fff" /> : <>
+        <View>
         <Image
           source={{
             uri: `https://image.tmdb.org/t/p/w500${movieDetails?.backdrop_path}`,
@@ -127,6 +129,7 @@ const Details = () => {
             : movieDetails?.overview}
         </Text>
       </View>
+      </>}
     </View>
   );
 }
