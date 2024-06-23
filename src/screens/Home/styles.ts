@@ -30,4 +30,10 @@ export const styles = StyleSheet.create({
     width: "80%",
     paddingLeft: 15
   },
+  noResult: {
+    color: "#fff",
+    fontSize: 18,
+    textAlign: "center",
+    marginVertical: 10,
+  }
 });

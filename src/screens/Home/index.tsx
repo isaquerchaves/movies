@@ -53,18 +53,23 @@ export function Home() {
     });
 
     if (response.data.results.length === 0) {
-      return setNoResult(true);
+      setNoResult(true);
+      setLoading(false);
+      setSearchResultMovies([])
+    } else {
+      setNoResult(false);
+      setSearchResultMovies(response.data.results);
+      setLoading(false);
     }
-    setSearchResultMovies(response.data.results);
-    setLoading(true);
   };
 
   const handleSearch = (text: string) => {
     setSearch(text);
     if (text.length > 2) {
       searcheMovies(text);
+    } else {
+      setSearchResultMovies([]);
     }
-    setSearchResultMovies([]);
   };
 
   const movieData = search.length > 2 ? searchResultMovies : discoveryMovies;
@@ -83,6 +88,12 @@ export function Home() {
           />
           <MagnifyingGlass color="#FFf" size={25} weight="light" />
         </View>
+
+        {noResult && (
+          <Text style={styles.noResult}>
+            Nenhum filme encontrado para "{search}"
+          </Text>
+        )}
       </View>
 
       <View>
