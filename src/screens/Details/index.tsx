@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../services/api";
@@ -27,12 +27,14 @@ type RouterProps = {
 };
 
 const Details = () => {
+  //criar estado movieDetails
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState(false);
-
   const route = useRoute();
   const { movieId } = route.params as RouterProps;
+  const navigation = useNavigation();
 
+  //criar useEffect de buscar o movie
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
@@ -45,7 +47,6 @@ const Details = () => {
         setLoading(false);
       }
     };
-
     fetchMovieDetails();
   }, [movieId]);
 
@@ -57,7 +58,7 @@ const Details = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <CaretLeft color="#fff" size={32} weight="thin" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Detalhes</Text>
@@ -65,7 +66,6 @@ const Details = () => {
           <BookmarkSimple color="#fff" size={32} weight="thin" />
         </TouchableOpacity>
       </View>
-
       <View>
         <Image
           source={{
@@ -80,7 +80,6 @@ const Details = () => {
           style={styles.detailsPosterImage}
         />
         <Text style={styles.titleMovie}>{movieDetails?.title}</Text>
-
         <View style={styles.description}>
           <View style={styles.descriptionGroup}>
             <CalendarBlank color="#92929D" size={25} weight="thin" />
@@ -88,14 +87,12 @@ const Details = () => {
               {getYear(movieDetails?.release_date)}
             </Text>
           </View>
-
           <View style={styles.descriptionGroup}>
             <Clock color="#92929D" size={25} weight="thin" />
-            <Text style={styles.descriptionText}>
-              {`${movieDetails?.runtime} min`}
-            </Text>
+            <Text
+              style={styles.descriptionText}
+            >{`${movieDetails?.runtime} minutos`}</Text>
           </View>
-
           <View style={styles.descriptionGroup}>
             <Star
               color={
@@ -122,17 +119,16 @@ const Details = () => {
           </View>
         </View>
       </View>
-
       <View style={styles.about}>
         <Text style={styles.aboutText}>Sinopse</Text>
         <Text style={styles.aboutText}>
           {movieDetails?.overview === ""
-            ? "Ops! Parece que esse filme ainda não tem sinopse"
-            : movieDetails.overview}
+            ? "Ops! Parece que esse filme ainda não tem sinopse :-("
+            : movieDetails?.overview}
         </Text>
       </View>
     </View>
   );
-};
+}
 
 export default Details;

@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   },
   titleMovie: {
     position: "absolute",
-    height: 50,
+    height: "100%",
     left: 140,
     right: 32,
     top: 240,
