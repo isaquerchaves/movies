@@ -1,4 +1,10 @@
-import { View, Text, TextInput, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { styles } from "./styles";
 import { MagnifyingGlass } from "phosphor-react-native";
 import { useEffect, useState } from "react";
@@ -9,49 +15,92 @@ interface Movie {
   id: number;
   title: string;
   poster_path: string;
-  overview: string
+  overview: string;
 }
 
 export function Home() {
-  const [discoveryMovies, setDiscoveryMovies] = useState<Movie[]>([])
+  const [discoveryMovies, setDiscoveryMovies] = useState<Movie[]>([]);
+  const [searchResultMovies, setSearchResultMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [noResult, setNoResult] = useState(false);
+  const [search, setSearch] = useState("");
 
+  // Busca todos os filmes na API
   useEffect(() => {
-    const loadingMoreData = async () => {
-      const response = await api.get("/movie/popular");
-      setDiscoveryMovies(response.data.results)
-    }
+    loadMoreData();
+  }, []);
 
-    loadingMoreData();
-  }, [])
+  const loadMoreData = async () => {
+    setLoading(true);
+    const response = await api.get("/movie/popular", {
+      params: {
+        page,
+      },
+    });
+    setDiscoveryMovies([...discoveryMovies, ...response.data.results]);
+    setPage(page + 1);
+    setLoading(false);
+  };
+
+  // Busca filmes digitados no INPUT
+  const searcheMovies = async (query: string) => {
+    setLoading(true);
+    const response = await api.get("/search/movie", {
+      params: {
+        query,
+      },
+    });
+
+    if (response.data.results.length === 0) {
+      return setNoResult(true);
+    }
+    setSearchResultMovies(response.data.results);
+    setLoading(true);
+  };
+
+  const handleSearch = (text: string) => {
+    setSearch(text);
+    if (text.length > 2) {
+      searcheMovies(text);
+    }
+    setSearchResultMovies([]);
+  };
+
+  const movieData = search.length > 2 ? searchResultMovies : discoveryMovies;
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.header}>
-      <Text style={styles.headerText}>O que você quer assistir hoje?</Text>
-      <View style={styles.containerInput}>
-        <TextInput placeholderTextColor="#FFF" placeholder="Buscar" style={styles.input} />
-        <MagnifyingGlass color="#FFf" size={25} weight="light" />
-      </View>
+        <Text style={styles.headerText}>O que você quer assistir hoje?</Text>
+        <View style={styles.containerInput}>
+          <TextInput
+            placeholderTextColor="#FFF"
+            placeholder="Buscar"
+            style={styles.input}
+            value={search}
+            onChangeText={handleSearch}
+          />
+          <MagnifyingGlass color="#FFf" size={25} weight="light" />
+        </View>
       </View>
 
       <View>
-        <FlatList 
-          data={discoveryMovies}
+        <FlatList
+          data={movieData}
           numColumns={3}
-          renderItem={ (item) => (
-            <CardMovies 
-              data={item.item} 
-            />
-          )}
+          renderItem={(item) => <CardMovies data={item.item} />}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             padding: 35,
             paddingBottom: 100,
           }}
+          onEndReached={() => loadMoreData()} // Carrega nova página de filmes
+          onEndReachedThreshold={0.5} // Carrega nova página de filmes que chegar na metade da lista
         />
-      </View>
 
+        {loading && <ActivityIndicator size={50} color="#0296e5" />}
+      </View>
     </View>
-  )
+  );
 }
