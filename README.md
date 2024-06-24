@@ -1,4 +1,4 @@
-# 🎬 Movie App
+# 🎬 Movies App
 
 Este projeto é um aplicativo de filmes desenvolvido em React Native com o Expo, para as plataformas Android e iOS. A aplicação permite aos usuários pesquisar filmes, visualizar detalhes como sinopse, ano e duração, e adicionar filmes à lista de favoritos. A API utilizada para obter os dados dos filmes foi a do TMDB (The Movie Database).
 
