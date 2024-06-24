@@ -23,6 +23,7 @@ export function Home() {
   const [discoveryMovies, setDiscoveryMovies] = useState<Movie[]>([]);
   const [searchResultMovies, setSearchResultMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [noResult, setNoResult] = useState(false);
   const [search, setSearch] = useState("");
@@ -33,14 +34,19 @@ export function Home() {
   }, []);
 
   const loadMoreData = async () => {
+    if (loading || (totalPages > 0 && page > totalPages)) return; // Evita múltiplas chamadas simultâneas e para na última página
+
     setLoading(true);
-    const response = await api.get("/movie/popular", {
-      params: {
-        page,
-      },
-    });
-    setDiscoveryMovies([...discoveryMovies, ...response.data.results]);
-    setPage(page + 1);
+    try {
+      const response = await api.get("/movie/popular", {
+        params: { page },
+      });
+      setDiscoveryMovies((prevMovies) => [...prevMovies, ...response.data.results]);
+      setPage((prevPage) => prevPage + 1);
+      setTotalPages(response.data.total_pages); // Armazena o número total de páginas
+    } catch (error) {
+      console.error(error);
+    }
     setLoading(false);
   };
 
@@ -106,6 +112,7 @@ export function Home() {
       <View>
         <FlatList
           data={movieData}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           renderItem={renderMovieItem}
           showsHorizontalScrollIndicator={false}
