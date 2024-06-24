@@ -37,11 +37,6 @@ export function TabRoutes() {
           <BookmarkSimple color={color} size={30} weight="light" />
         )
       }} />
-      <Screen name="Search" component={Search} options={{
-        tabBarIcon: ({color}) => (
-          <MagnifyingGlass color={color} size={30} weight="light" />
-        )
-      }} />
     </Navigator>
   )
 }
