@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../services/api";
 import { styles } from "./styles";
@@ -10,6 +10,7 @@ import {
   Clock,
   Star,
 } from "phosphor-react-native";
+import { MovieContext } from "../../contexts/MoviesContext";
 
 type MovieDetails = {
   id: number;
@@ -34,6 +35,8 @@ const Details = () => {
   const { movieId } = route.params as RouterProps;
   const navigation = useNavigation();
 
+  const { addFavoriteMovies } = useContext(MovieContext);
+
   //criar useEffect de buscar o movie
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -53,7 +56,13 @@ const Details = () => {
   function getYear(data: string) {
     const ano = new Date(data).getFullYear();
     return ano;
-  }
+  };
+
+  const handleAddFavorite = () => {
+    if (movieDetails) {
+      addFavoriteMovies(Number(movieDetails.id));
+    }
+  };;
 
   return (
     <View style={styles.container}>
@@ -62,7 +71,7 @@ const Details = () => {
           <CaretLeft color="#fff" size={32} weight="thin" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Detalhes</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleAddFavorite}>
           <BookmarkSimple color="#fff" size={32} weight="thin" />
         </TouchableOpacity>
       </View>
