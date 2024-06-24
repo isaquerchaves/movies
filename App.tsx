@@ -1,12 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { Routes } from './src/routes';
+import { StatusBar } from "expo-status-bar";
+import React from "react";
+import { Routes } from "./src/routes";
+import { MovieProvider } from "./src/contexts/MoviesContext";
 
 export default function App() {
   return (
     <>
-      <Routes />
-      <StatusBar style="auto" translucent backgroundColor='#242a32' />
+      <MovieProvider>
+        <Routes />
+        <StatusBar style="auto" translucent backgroundColor="#242a32" />
+      </MovieProvider>
     </>
   );
 }
